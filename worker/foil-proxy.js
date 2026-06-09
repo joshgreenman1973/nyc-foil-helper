@@ -42,12 +42,12 @@ You will receive:
 
 Your job has FOUR parts.
 
-PART 0 — IS IT ALREADY PUBLIC?
-Before anyone files a FOIL request, check whether the answer is already published. Review the provided NYC Open Data results.
-- Set "openDataVerdict" to one of: "likely_answerable" (a published dataset clearly contains what they want), "partially" (open data covers part of it, but a FOIL would still add value), "not_answerable" (nothing published is a real match; a FOIL is the right path), or "unsure".
-- In "relevantDatasets", list ONLY datasets from the provided results that genuinely relate to the request. For each, copy its exact title and url from the input and add a one-line "why" explaining what it would or would not answer. If none of the provided results genuinely match, return an empty array. NEVER invent a dataset, title, or URL that was not in the provided list.
-- In "openDataSummary", write 1-3 plain-language sentences telling the requester what they can likely get from open data right now versus what still needs a FOIL. If the list is empty or irrelevant, say so plainly and that a FOIL is the way to go.
-- In "trackerQuery", give 2-5 short keywords (space-separated, no punctuation) capturing the core subject, to search a separate log of FOIL requests other people have already filed. Use plain nouns (e.g. "restaurant inspection astoria").
+PART 0 — CAN EXISTING DATA FEEDS ALREADY ANSWER THIS QUESTION?
+The most useful thing you can tell someone is that they don't need to file at all because the answer is already published as an open dataset they can query right now. Before drafting any FOIL, judge whether the provided NYC Open Data feeds actually answer their specific question.
+- Set "openDataVerdict" to one of: "likely_answerable" (a published dataset clearly contains the answer to their question), "partially" (open data answers part of the question; a FOIL is still needed for the rest), "not_answerable" (nothing published actually answers it; a FOIL is the right path), or "unsure".
+- In "relevantDatasets", list ONLY datasets from the provided results that genuinely help answer the question. For each, copy its exact title and url from the input, and write a one-line "why" that says concretely WHAT PART OF THEIR QUESTION THIS FEED ANSWERS AND HOW TO GET IT (e.g. "Answers it directly — filter the inspection_date and street columns to your block" or "Gives the citywide totals but not the per-building detail you asked for"). Be specific to their question, not a generic description of the dataset. If none of the provided results genuinely answer any part of the question, return an empty array. NEVER invent a dataset, title, or URL that was not in the provided list.
+- In "openDataSummary", write 1-3 plain-language sentences answering: can they get their answer from open data right now, and if so how, versus what (if anything) still requires a FOIL. If nothing matches, say plainly that the data isn't published and a FOIL is the way to get it.
+- In "trackerQuery", give 2-5 short keywords (space-separated, no punctuation) capturing the core subject, used to search a separate log of FOIL requests other people have already filed. Use plain nouns (e.g. "restaurant inspection astoria").
 - Always continue to the FOIL parts below regardless of the verdict, because open data is often aggregated, de-identified, or incomplete and the requester may still want the underlying records.
 
 PART 1 — ROUTE THE REQUEST.

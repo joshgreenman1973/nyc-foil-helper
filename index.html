@@ -193,6 +193,7 @@
   .ds .ds-title .arr { color: var(--navy); font-size: 13px; }
   .ds .ds-why { font-size: 13.5px; color: var(--ink-soft); margin: 5px 0 0; }
   .ds .ds-src { font-family: var(--mono); font-size: 11px; color: var(--slate, #64748b); margin-top: 6px; letter-spacing: .02em; }
+  .tracker-lead { font-size: 13.5px; color: var(--ink-soft); margin: 18px 0 8px; }
   .tracker-link {
     display: flex; align-items: center; gap: 12px; padding: 14px 18px; margin-top: 4px;
     background: #0a1628; color: var(--cream, #f5f0e8); text-decoration: none; border: 1.5px solid #0a1628;
@@ -322,8 +323,8 @@
     <div class="panel">
       <div class="panel-head">
         <span class="num">02</span>
-        <h2>Is it already public?</h2>
-        <p>Before you file, check what the city has already released.</p>
+        <h2>Can open data answer this already?</h2>
+        <p>The city may already publish the answer &mdash; no FOIL needed.</p>
       </div>
       <div class="panel-body">
         <div class="verdict" id="verdict">
@@ -334,9 +335,10 @@
           </div>
         </div>
         <div class="ds-list" id="dsList"></div>
+        <p class="tracker-lead" id="trackerLead">Still want the underlying records? Two more things before you file:</p>
         <a class="tracker-link" id="trackerLink" href="#" target="_blank" rel="noopener">
           <span class="tl-badge">FOIL Tracker</span>
-          <span class="tl-text" id="trackerText"><b>Has someone already asked for this?</b> See FOIL requests other people have filed.</span>
+          <span class="tl-text" id="trackerText"><b>And: has someone already asked for this?</b> Someone may have filed the same request &mdash; and gotten the records.</span>
           <span class="tl-arr">&nearr;</span>
         </a>
       </div>
@@ -467,10 +469,10 @@
   }
 
   const VERDICTS = {
-    likely_answerable: { icon: "✓", title: "Good news — this may already be public." },
-    partially:         { icon: "½", title: "Partly public — open data covers some of this." },
-    not_answerable:    { icon: "→", title: "Not published as data — a FOIL request is the way to get it." },
-    unsure:            { icon: "?",      title: "Couldn't find a clear match in open data." }
+    likely_answerable: { icon: "✓", title: "You may not need to file — open data already answers this." },
+    partially:         { icon: "½", title: "Open data answers part of this. A FOIL covers the rest." },
+    not_answerable:    { icon: "→", title: "This isn't in open data — a FOIL is the way to get your answer." },
+    unsure:            { icon: "?", title: "No open dataset clearly answers this." }
   };
 
   function renderOpenData(r) {
@@ -499,8 +501,8 @@
     const base = "https://joshgreenman1973.github.io/experiments/nyc-foil-tracker/";
     $("trackerLink").href = q ? base + "?q=" + encodeURIComponent(q) : base;
     $("trackerText").innerHTML = q
-      ? `<b>Has someone already asked for this?</b> See prior FOIL requests matching “${esc(q)}”.`
-      : `<b>Has someone already asked for this?</b> Browse FOIL requests other people have filed.`;
+      ? `<b>And: has someone already asked for this?</b> See prior FOIL requests matching “${esc(q)}” — they may already have the records.`
+      : `<b>And: has someone already asked for this?</b> Browse FOIL requests other people have filed.`;
   }
 
   function render(r, details) {
