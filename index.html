@@ -174,6 +174,36 @@
   .alts ul { margin: 8px 0 0; padding-left: 18px; }
   .alts li { margin: 4px 0; color: var(--ink-soft); }
 
+  /* ---- Open-data scan (Step 02) ---- */
+  .verdict { display: flex; gap: 14px; align-items: flex-start; padding: 18px 20px; border: 1.5px solid; border-radius: 0; margin: 0 0 18px; }
+  .verdict .vicon { font-family: var(--serif); font-style: italic; font-size: 26px; line-height: 1; flex: none; }
+  .verdict .vtitle { font-weight: 700; font-size: 15px; letter-spacing: .01em; margin: 0 0 4px; }
+  .verdict .vbody { font-size: 14.5px; margin: 0; }
+  .verdict.likely_answerable { border-color: var(--ok); background: rgba(47,107,58,.07); color: #214d2a; }
+  .verdict.partially { border-color: var(--warn); background: rgba(154,106,20,.07); color: #6f4e0c; }
+  .verdict.not_answerable, .verdict.unsure { border-color: var(--navy); background: rgba(20,54,95,.06); color: var(--navy-deep); }
+  .ds-list { display: grid; gap: 10px; margin: 0 0 16px; }
+  .ds {
+    display: block; padding: 14px 16px; background: var(--paper); border: 1px solid var(--rule);
+    text-decoration: none; color: var(--ink); transition: border-color .15s, transform .08s, background .15s;
+  }
+  .ds:hover { border-color: var(--navy); background: #fff; }
+  .ds:active { transform: translateY(1px); }
+  .ds .ds-title { font-family: var(--serif); font-weight: 600; font-size: 16px; display: flex; align-items: baseline; gap: 8px; }
+  .ds .ds-title .arr { color: var(--navy); font-size: 13px; }
+  .ds .ds-why { font-size: 13.5px; color: var(--ink-soft); margin: 5px 0 0; }
+  .ds .ds-src { font-family: var(--mono); font-size: 11px; color: var(--slate, #64748b); margin-top: 6px; letter-spacing: .02em; }
+  .tracker-link {
+    display: flex; align-items: center; gap: 12px; padding: 14px 18px; margin-top: 4px;
+    background: #0a1628; color: var(--cream, #f5f0e8); text-decoration: none; border: 1.5px solid #0a1628;
+    transition: background .15s;
+  }
+  .tracker-link:hover { background: #132240; }
+  .tracker-link .tl-badge { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #c8a43a; border: 1px solid #c8a43a; padding: 3px 7px; flex: none; }
+  .tracker-link .tl-text { font-size: 14px; color: #f5f0e8; }
+  .tracker-link .tl-text b { color: #fff; }
+  .tracker-link .tl-arr { margin-left: auto; color: #c8a43a; font-size: 18px; }
+
   .letter-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 26px; background: var(--navy); color: #fff; }
   .letter-head h3 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 18px; }
   .letter-head .subj { font-family: var(--mono); font-size: 12px; opacity: .85; }
@@ -223,7 +253,7 @@
 <div class="masthead">
   <div class="masthead-inner">
     <span><b>NYC Records Request Helper</b><span class="dot"></span>Freedom of Information Law</span>
-    <span>Public Officers Law &middot; Article 6 &middot; &sect;&sect;84&ndash;90</span>
+    <span><a href="https://joshgreenman1973.github.io/experiments/nyc-foil-tracker/" target="_blank" rel="noopener" style="color:var(--navy);text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:1px">See what others are asking &rarr; FOIL Tracker</a></span>
   </div>
 </div>
 
@@ -281,17 +311,41 @@
 
       <div id="loading">
         <span class="spinner">FOIL</span>
-        <span>Reading your request, routing it to the right agency, and drafting the letter&hellip;</span>
+        <span>Checking what's already public, routing to the right agency, and drafting the letter&hellip;</span>
       </div>
     </div>
   </section>
 
   <!-- RESULTS -->
   <section id="results">
-    <!-- STEP 2: agency -->
-    <div class="panel route">
+    <!-- STEP 2: already public? -->
+    <div class="panel">
       <div class="panel-head">
         <span class="num">02</span>
+        <h2>Is it already public?</h2>
+        <p>Before you file, check what the city has already released.</p>
+      </div>
+      <div class="panel-body">
+        <div class="verdict" id="verdict">
+          <span class="vicon" id="vicon"></span>
+          <div>
+            <p class="vtitle" id="vtitle"></p>
+            <p class="vbody" id="vbody"></p>
+          </div>
+        </div>
+        <div class="ds-list" id="dsList"></div>
+        <a class="tracker-link" id="trackerLink" href="#" target="_blank" rel="noopener">
+          <span class="tl-badge">FOIL Tracker</span>
+          <span class="tl-text" id="trackerText"><b>Has someone already asked for this?</b> See FOIL requests other people have filed.</span>
+          <span class="tl-arr">&nearr;</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- STEP 3: agency -->
+    <div class="panel route" style="margin-top:28px">
+      <div class="panel-head">
+        <span class="num">03</span>
         <h2>Where it should go</h2>
       </div>
       <div class="agency-card">
@@ -304,7 +358,7 @@
       </div>
     </div>
 
-    <!-- STEP 3: letter -->
+    <!-- STEP 4: letter -->
     <div class="panel" style="margin-top:28px">
       <div class="letter-head">
         <h3>Your FOIL request &mdash; edit anything before you send</h3>
@@ -412,7 +466,45 @@
     }
   }
 
+  const VERDICTS = {
+    likely_answerable: { icon: "✓", title: "Good news — this may already be public." },
+    partially:         { icon: "½", title: "Partly public — open data covers some of this." },
+    not_answerable:    { icon: "→", title: "Not published as data — a FOIL request is the way to get it." },
+    unsure:            { icon: "?",      title: "Couldn't find a clear match in open data." }
+  };
+
+  function renderOpenData(r) {
+    const v = (r.openDataVerdict || "unsure").toLowerCase();
+    const meta = VERDICTS[v] || VERDICTS.unsure;
+    const box = $("verdict");
+    box.className = "verdict " + v;
+    $("vicon").textContent = meta.icon;
+    $("vtitle").textContent = meta.title;
+    $("vbody").textContent = r.openDataSummary || "";
+
+    const list = $("dsList");
+    const ds = Array.isArray(r.relevantDatasets) ? r.relevantDatasets : [];
+    if (ds.length) {
+      list.style.display = "grid";
+      list.innerHTML = ds.map(d => `
+        <a class="ds" href="${esc(d.url)}" target="_blank" rel="noopener">
+          <span class="ds-title">${esc(d.title)} <span class="arr">open dataset &nearr;</span></span>
+          <p class="ds-why">${esc(d.why)}</p>
+          <div class="ds-src">NYC Open Data</div>
+        </a>`).join("");
+    } else { list.style.display = "none"; list.innerHTML = ""; }
+
+    // deep-link into the FOIL Tracker, pre-seeded with keywords
+    const q = (r.trackerQuery || "").trim();
+    const base = "https://joshgreenman1973.github.io/experiments/nyc-foil-tracker/";
+    $("trackerLink").href = q ? base + "?q=" + encodeURIComponent(q) : base;
+    $("trackerText").innerHTML = q
+      ? `<b>Has someone already asked for this?</b> See prior FOIL requests matching “${esc(q)}”.`
+      : `<b>Has someone already asked for this?</b> Browse FOIL requests other people have filed.`;
+  }
+
   function render(r, details) {
+    renderOpenData(r);
     $("agencyName").textContent = r.agencyName || "Likely agency";
     const conf = (r.confidence || "medium").toLowerCase();
     const badge = $("confBadge");

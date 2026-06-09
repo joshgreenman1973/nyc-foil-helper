@@ -38,8 +38,17 @@ You will receive:
 1. The requester's plain-language description of what they are seeking.
 2. Optional requester details (name, affiliation, email, phone, whether they want a fee waiver, and date).
 3. A JSON directory of major New York City agencies and the records each one holds.
+4. A list of REAL datasets already published on the NYC Open Data portal that matched a keyword search of the request. Each has a title, description, and URL.
 
-Your job has three parts.
+Your job has FOUR parts.
+
+PART 0 — IS IT ALREADY PUBLIC?
+Before anyone files a FOIL request, check whether the answer is already published. Review the provided NYC Open Data results.
+- Set "openDataVerdict" to one of: "likely_answerable" (a published dataset clearly contains what they want), "partially" (open data covers part of it, but a FOIL would still add value), "not_answerable" (nothing published is a real match; a FOIL is the right path), or "unsure".
+- In "relevantDatasets", list ONLY datasets from the provided results that genuinely relate to the request. For each, copy its exact title and url from the input and add a one-line "why" explaining what it would or would not answer. If none of the provided results genuinely match, return an empty array. NEVER invent a dataset, title, or URL that was not in the provided list.
+- In "openDataSummary", write 1-3 plain-language sentences telling the requester what they can likely get from open data right now versus what still needs a FOIL. If the list is empty or irrelevant, say so plainly and that a FOIL is the way to go.
+- In "trackerQuery", give 2-5 short keywords (space-separated, no punctuation) capturing the core subject, to search a separate log of FOIL requests other people have already filed. Use plain nouns (e.g. "restaurant inspection astoria").
+- Always continue to the FOIL parts below regardless of the verdict, because open data is often aggregated, de-identified, or incomplete and the requester may still want the underlying records.
 
 PART 1 — ROUTE THE REQUEST.
 - Choose the single agency from the provided directory most likely to hold the records. Use the "holds" and "keywords" fields. Return its exact "id" and "name".
@@ -71,6 +80,22 @@ const RESULT_TOOL = {
   input_schema: {
     type: "object",
     properties: {
+      openDataVerdict: { type: "string", enum: ["likely_answerable", "partially", "not_answerable", "unsure"] },
+      openDataSummary: { type: "string", description: "1-3 sentences on what open data can answer now vs. what needs a FOIL." },
+      relevantDatasets: {
+        type: "array",
+        description: "Datasets chosen ONLY from the provided NYC Open Data results. Empty if none truly match.",
+        items: {
+          type: "object",
+          properties: {
+            title: { type: "string" },
+            url: { type: "string" },
+            why: { type: "string" },
+          },
+          required: ["title", "url", "why"],
+        },
+      },
+      trackerQuery: { type: "string", description: "2-5 space-separated keywords to search prior FOIL requests." },
       agencyId: { type: "string", description: "The exact 'id' of the chosen agency from the directory, or 'unknown'." },
       agencyName: { type: "string", description: "Full name of the chosen agency." },
       confidence: { type: "string", enum: ["high", "medium", "low"] },
@@ -92,7 +117,7 @@ const RESULT_TOOL = {
       submissionGuidance: { type: "string" },
       caveats: { type: "string", description: "Any caveats: missing info the user should add, scope warnings, or exemptions likely to apply." },
     },
-    required: ["agencyId", "agencyName", "confidence", "reasoning", "emailSubject", "foilLetter", "submissionGuidance"],
+    required: ["openDataVerdict", "openDataSummary", "relevantDatasets", "trackerQuery", "agencyId", "agencyName", "confidence", "reasoning", "emailSubject", "foilLetter", "submissionGuidance"],
   },
 };
 
@@ -129,6 +154,9 @@ export default {
     const details = body.details || {};
     const agencies = body.agencies || [];
 
+    // --- Step 0: search the real NYC Open Data catalog for already-published datasets ---
+    const openData = await searchOpenData(userRequest);
+
     const userContent =
       `PLAIN-LANGUAGE REQUEST:\n${userRequest}\n\n` +
       `REQUESTER DETAILS (use what is present; bracket what is missing):\n` +
@@ -138,6 +166,7 @@ export default {
       `Phone: ${details.phone || "(not provided)"}\n` +
       `Wants fee waiver / public-interest purpose: ${details.feeWaiver ? "yes" : "not indicated"}\n` +
       `Today's date: ${details.date || "(not provided)"}\n\n` +
+      `NYC OPEN DATA SEARCH RESULTS (real datasets matching a keyword search of the request; pick relevant ones only from this list, never invent):\n${JSON.stringify(openData)}\n\n` +
       `AGENCY DIRECTORY (choose from these):\n${JSON.stringify(agencies)}`;
 
     let apiResp;
@@ -176,6 +205,46 @@ export default {
     return json({ result: toolUse.input }, 200, cors);
   },
 };
+
+// Words to drop so the catalog search keys on meaningful terms.
+const STOPWORDS = new Set("a an and the of for to from in on at by with about into over under all any my our your their his her its this that these those i we you they it want need would like get obtain request records record data dataset datasets information info copy copies please give me show find every each between during regarding concerning related relating since over past last few several many much how what which who whom where when why is are was were be been being do does did has have had will can could should may might".split(/\s+/));
+
+async function searchOpenData(text) {
+  const terms = text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 2 && !STOPWORDS.has(w));
+  // de-dupe, keep order, cap to keep the query tight
+  const seen = new Set();
+  const keywords = [];
+  for (const w of terms) { if (!seen.has(w)) { seen.add(w); keywords.push(w); } if (keywords.length >= 8) break; }
+  const q = keywords.join(" ") || text.slice(0, 80);
+
+  const url =
+    "https://api.us.socrata.com/api/catalog/v1?" +
+    "domains=data.cityofnewyork.us&search_context=data.cityofnewyork.us" +
+    "&only=dataset&limit=12&q=" + encodeURIComponent(q);
+
+  try {
+    const r = await fetch(url, { headers: { accept: "application/json" } });
+    if (!r.ok) return { query: q, results: [], note: "catalog search unavailable" };
+    const data = await r.json();
+    const results = (data.results || []).map((it) => {
+      const res = it.resource || {};
+      const desc = (res.description || "").replace(/\s+/g, " ").trim().slice(0, 280);
+      return {
+        title: res.name || "(untitled)",
+        url: it.permalink || it.link || (res.id ? `https://data.cityofnewyork.us/d/${res.id}` : ""),
+        description: desc,
+        updated: (res.updatedAt || "").slice(0, 10),
+      };
+    });
+    return { query: q, results };
+  } catch (e) {
+    return { query: q, results: [], note: "catalog search failed" };
+  }
+}
 
 function json(obj, status, cors) {
   return new Response(JSON.stringify(obj), {
