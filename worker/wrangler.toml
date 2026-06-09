@@ -1,0 +1,15 @@
+name = "nyc-foil-helper"
+main = "foil-proxy.js"
+compatibility_date = "2026-01-01"
+
+# Deploy steps:
+#   1. npm install -g wrangler            (one time)
+#   2. wrangler login                     (one time, opens browser)
+#   3. wrangler secret put ANTHROPIC_API_KEY   (paste your key when prompted)
+#   4. wrangler deploy
+#
+# After deploy, wrangler prints a URL like:
+#   https://nyc-foil-helper.<your-subdomain>.workers.dev
+# Put that URL into WORKER_URL in ../index.html.
+#
+# Before going public, edit ALLOWED_ORIGINS in foil-proxy.js to your GitHub Pages origin.

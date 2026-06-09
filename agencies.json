@@ -1,0 +1,265 @@
+{
+  "_meta": {
+    "description": "Curated directory of major New York City agencies and the records they hold, used to route FOIL (Freedom of Information Law) requests. Every New York City agency receives FOIL requests through the central OpenRecords portal; that is the verified, canonical submission channel. Named records-access officers change frequently, so this directory does not hardcode officer emails. To confirm the current officer for any agency, consult the official FOIL Officers Directory.",
+    "submissionPortal": "https://a860-openrecords.nyc.gov/request/new",
+    "officersDirectory": "https://a860-openrecords.nyc.gov/foil-officers-directory",
+    "lastReviewed": "2026-06-09",
+    "statute": "New York Freedom of Information Law (FOIL), Public Officers Law Article 6, Sections 84-90",
+    "note": "Records descriptions reflect each agency's published jurisdiction. They are a routing aid, not an exhaustive list of holdings."
+  },
+  "agencies": [
+    {
+      "id": "nypd",
+      "name": "New York City Police Department",
+      "abbr": "NYPD",
+      "category": "Public safety",
+      "holds": "Arrest reports, complaint (UF-61) reports, accident reports, body-worn camera footage, stop-question-and-frisk data, 911/radio run records, disciplinary and CCRB-related records, crime statistics (CompStat), policies, patrol guide, contracts",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "appealsContact": "FOILAPPEALS@nypd.org",
+      "keywords": ["police", "nypd", "arrest", "crime", "complaint report", "stop and frisk", "body camera", "officer", "precinct", "911", "ccrb", "patrol", "shooting", "use of force", "surveillance"]
+    },
+    {
+      "id": "fdny",
+      "name": "Fire Department of the City of New York",
+      "abbr": "FDNY",
+      "category": "Public safety",
+      "holds": "Fire incident reports, EMS/ambulance call records, fire inspection records, response times, building fire safety violations, certificates of fitness, EMS billing, contracts",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["fire", "fdny", "ems", "ambulance", "fire inspection", "incident report", "response time", "smoke", "emergency medical"]
+    },
+    {
+      "id": "doc",
+      "name": "New York City Department of Correction",
+      "abbr": "DOC",
+      "category": "Public safety",
+      "holds": "Rikers Island and jail records, inmate incident reports, use-of-force reports, in-custody death records, staffing and overtime data, visitor logs, facility inspections, contracts",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["jail", "rikers", "correction", "doc", "inmate", "incarceration", "in-custody death", "use of force", "detainee", "corrections officer"]
+    },
+    {
+      "id": "doe",
+      "name": "New York City Department of Education",
+      "abbr": "DOE",
+      "category": "Education",
+      "holds": "School enrollment and demographic data, school safety incident reports, budgets, contracts and vendor agreements, teacher and staff data, test scores, capital project records, busing contracts, special education records (de-identified)",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["school", "education", "doe", "student", "teacher", "classroom", "test score", "enrollment", "principal", "busing", "special education", "pre-k", "specialized high school"]
+    },
+    {
+      "id": "hpd",
+      "name": "New York City Department of Housing Preservation and Development",
+      "abbr": "HPD",
+      "category": "Housing",
+      "holds": "Housing code violations, building registrations, affordable housing program records, lottery data, harassment findings, emergency repair records, complaint histories, contracts with developers",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["housing", "hpd", "landlord", "tenant", "code violation", "affordable housing", "lottery", "harassment", "building registration", "heat", "repair", "rent"]
+    },
+    {
+      "id": "dob",
+      "name": "New York City Department of Buildings",
+      "abbr": "DOB",
+      "category": "Housing",
+      "holds": "Building permits, construction filings, stop-work orders, complaints, inspection records, certificates of occupancy, violations, elevator and facade records, professional license records",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["building", "dob", "permit", "construction", "stop work order", "certificate of occupancy", "inspection", "facade", "elevator", "scaffold", "violation", "zoning filing"]
+    },
+    {
+      "id": "dot",
+      "name": "New York City Department of Transportation",
+      "abbr": "DOT",
+      "category": "Transportation and infrastructure",
+      "holds": "Traffic crash and signal data, street and sidewalk repair records, bike lane and Vision Zero records, parking and metering contracts, ferry records, street design plans, capital projects",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["transportation", "dot", "traffic", "street", "sidewalk", "bike lane", "vision zero", "crash", "pothole", "ferry", "parking meter", "signal", "speed camera", "crosswalk"]
+    },
+    {
+      "id": "dsny",
+      "name": "New York City Department of Sanitation",
+      "abbr": "DSNY",
+      "category": "Transportation and infrastructure",
+      "holds": "Collection and recycling tonnage data, route records, snow removal records, enforcement and summons data, organics program records, fleet records, contracts",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["sanitation", "dsny", "garbage", "trash", "recycling", "compost", "organics", "snow", "litter", "collection", "tonnage", "rat", "cleanup"]
+    },
+    {
+      "id": "dohmh",
+      "name": "New York City Department of Health and Mental Hygiene",
+      "abbr": "DOHMH",
+      "category": "Health",
+      "holds": "Restaurant inspection records, disease surveillance and vital statistics (de-identified), lead and air quality data, mental health program records, rodent inspections, daycare inspections, contracts",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["health", "dohmh", "restaurant inspection", "disease", "vital statistics", "lead", "air quality", "mental health", "rodent", "daycare", "birth", "death record", "overdose", "covid"]
+    },
+    {
+      "id": "hra",
+      "name": "New York City Human Resources Administration / Department of Social Services",
+      "abbr": "HRA/DSS",
+      "category": "Social services",
+      "holds": "Public assistance and SNAP program data (aggregate/de-identified), shelter and homelessness program records, rental assistance, emergency food program records, contracts with providers",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["hra", "social services", "snap", "food stamps", "public assistance", "welfare", "cash assistance", "rental assistance", "cityfheps", "benefits", "medicaid"]
+    },
+    {
+      "id": "dhs",
+      "name": "New York City Department of Homeless Services",
+      "abbr": "DHS",
+      "category": "Social services",
+      "holds": "Shelter census and capacity data, shelter contracts, street homelessness outreach records, intake records (de-identified), shelter conditions and inspection records",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["homeless", "dhs", "shelter", "homelessness", "street outreach", "shelter census", "intake", "encampment", "migrant", "asylum seeker"]
+    },
+    {
+      "id": "acs",
+      "name": "New York City Administration for Children's Services",
+      "abbr": "ACS",
+      "category": "Social services",
+      "holds": "Child welfare aggregate data, foster care and juvenile justice program records, daycare and child care program oversight records, fatality reviews (de-identified), contracts",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["acs", "children's services", "child welfare", "foster care", "juvenile", "child abuse", "daycare oversight", "fatality review", "youth"]
+    },
+    {
+      "id": "dcwp",
+      "name": "New York City Department of Consumer and Worker Protection",
+      "abbr": "DCWP",
+      "category": "Business and labor",
+      "holds": "Business license records, consumer complaints, inspection and enforcement actions, fines, paid sick leave and fair workweek enforcement, debt collector records",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["consumer", "dcwp", "dca", "business license", "consumer complaint", "worker protection", "paid sick leave", "fair workweek", "debt collector", "inspection", "fine"]
+    },
+    {
+      "id": "dcp",
+      "name": "New York City Department of City Planning",
+      "abbr": "DCP",
+      "category": "Land use and environment",
+      "holds": "Zoning records, land use applications (ULURP), demographic and PLUTO data, neighborhood study records, rezoning analyses, environmental review documents",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["city planning", "dcp", "zoning", "land use", "ulurp", "rezoning", "pluto", "neighborhood study", "density", "development plan"]
+    },
+    {
+      "id": "dep",
+      "name": "New York City Department of Environmental Protection",
+      "abbr": "DEP",
+      "category": "Land use and environment",
+      "holds": "Water and sewer records, water quality testing, noise complaint records, air pollution enforcement, watershed and reservoir records, water billing, contracts",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["dep", "environmental protection", "water", "sewer", "water quality", "noise complaint", "air pollution", "watershed", "reservoir", "flooding", "lead in water"]
+    },
+    {
+      "id": "dpr",
+      "name": "New York City Department of Parks and Recreation",
+      "abbr": "NYC Parks",
+      "category": "Land use and environment",
+      "holds": "Park maintenance and capital project records, tree census and removal records, permit records, concession and contract records, playground and pool records, forestry records",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["parks", "recreation", "tree", "playground", "pool", "park maintenance", "forestry", "concession", "greenway", "athletic field"]
+    },
+    {
+      "id": "tlc",
+      "name": "New York City Taxi and Limousine Commission",
+      "abbr": "TLC",
+      "category": "Transportation and infrastructure",
+      "holds": "Taxi and for-hire vehicle trip data, driver and vehicle license records, medallion records, enforcement actions, fare and surcharge records, Uber/Lyft (high-volume for-hire) data",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["taxi", "tlc", "for-hire vehicle", "uber", "lyft", "medallion", "driver license", "trip data", "yellow cab", "green cab", "rideshare"]
+    },
+    {
+      "id": "comptroller",
+      "name": "Office of the New York City Comptroller",
+      "abbr": "Comptroller",
+      "category": "Finance and oversight",
+      "holds": "City contract registrations, audits, settlement and claims data (lawsuits against the City), pension fund records, prevailing wage enforcement, budget analyses, spending data",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["comptroller", "audit", "settlement", "claim", "lawsuit against city", "contract registration", "pension", "prevailing wage", "spending", "checkbook"]
+    },
+    {
+      "id": "doi",
+      "name": "New York City Department of Investigation",
+      "abbr": "DOI",
+      "category": "Finance and oversight",
+      "holds": "Investigation reports (closed), corruption and misconduct findings, policy recommendations, background investigation records, referrals",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["doi", "investigation", "corruption", "misconduct", "fraud", "whistleblower", "inspector general", "integrity"]
+    },
+    {
+      "id": "omb",
+      "name": "New York City Office of Management and Budget",
+      "abbr": "OMB",
+      "category": "Finance and oversight",
+      "holds": "City budget documents, financial plans, agency spending allocations, headcount data, revenue projections",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["omb", "budget", "financial plan", "spending allocation", "headcount", "revenue", "fiscal"]
+    },
+    {
+      "id": "mayor",
+      "name": "Office of the Mayor",
+      "abbr": "Mayor's Office",
+      "category": "Executive",
+      "holds": "Mayoral correspondence, schedules and calendars, appointment records, executive orders, communications with agencies and outside parties, policy memos",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["mayor", "mayor's office", "city hall", "executive order", "mayoral schedule", "appointment", "correspondence", "deputy mayor"]
+    },
+    {
+      "id": "dcas",
+      "name": "New York City Department of Citywide Administrative Services",
+      "abbr": "DCAS",
+      "category": "Executive",
+      "holds": "City employee civil service records, hiring and exam data, city fleet records, city-owned real estate and leases, procurement, energy management records",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["dcas", "civil service", "city employee", "hiring", "exam", "fleet", "city property", "lease", "procurement", "city jobs"]
+    },
+    {
+      "id": "sca",
+      "name": "New York City School Construction Authority",
+      "abbr": "SCA",
+      "category": "Education",
+      "holds": "School construction and capital project records, contracts, bids, project schedules, environmental records for school sites",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["sca", "school construction", "school capital project", "school building", "school bid", "school contract"]
+    },
+    {
+      "id": "nycha",
+      "name": "New York City Housing Authority",
+      "abbr": "NYCHA",
+      "category": "Housing",
+      "holds": "Public housing maintenance and repair records, lead and mold inspection records, capital project and contract records, development data, work order data (NYCHA has its own records-access process)",
+      "openRecordsUrl": "https://www.nyc.gov/site/nycha/about/foil-requests.page",
+      "keywords": ["nycha", "public housing", "housing authority", "development", "lead paint", "mold", "work order", "section 8", "repair"]
+    },
+    {
+      "id": "mocj",
+      "name": "New York City Mayor's Office of Criminal Justice",
+      "abbr": "MOCJ",
+      "category": "Public safety",
+      "holds": "Criminal justice policy and program records, jail population planning (borough-based jails), supervised release and bail program contracts, reentry program records",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["mocj", "criminal justice", "borough based jails", "close rikers", "supervised release", "bail", "reentry", "justice policy"]
+    },
+    {
+      "id": "bic",
+      "name": "New York City Business Integrity Commission",
+      "abbr": "BIC",
+      "category": "Business and labor",
+      "holds": "Trade waste hauler licenses, wholesale market records, enforcement and background records for regulated industries",
+      "openRecordsUrl": "https://a860-openrecords.nyc.gov/request/new",
+      "keywords": ["bic", "business integrity", "trade waste", "carting", "wholesale market", "hauler license"]
+    },
+    {
+      "id": "boe",
+      "name": "New York City Board of Elections",
+      "abbr": "BOE",
+      "category": "Elections",
+      "holds": "Voter registration data, poll site records, election results and canvass records, ballot records, poll worker records. Note: the Board of Elections is a State-chartered body; it accepts FOIL requests directly rather than through OpenRecords.",
+      "openRecordsUrl": "https://www.vote.nyc/page/freedom-information-law-foil",
+      "keywords": ["board of elections", "boe", "voter registration", "poll site", "election results", "ballot", "canvass", "poll worker", "voting"]
+    },
+    {
+      "id": "edc",
+      "name": "New York City Economic Development Corporation",
+      "abbr": "NYCEDC",
+      "category": "Business and labor",
+      "holds": "Development project records, ground leases, subsidy and incentive agreements, RFPs and contracts, waterfront and industrial property records. Note: EDC is a local development corporation with its own FOIL process.",
+      "openRecordsUrl": "https://edc.nyc/foil-request",
+      "keywords": ["edc", "economic development", "development project", "ground lease", "subsidy", "rfp", "waterfront", "industrial", "ferry", "incentive"]
+    }
+  ]
+}
