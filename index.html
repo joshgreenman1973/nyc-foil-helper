@@ -482,7 +482,7 @@
     box.className = "verdict " + v;
     $("vicon").textContent = meta.icon;
     $("vtitle").textContent = meta.title;
-    $("vbody").textContent = r.openDataSummary || "";
+    $("vbody").innerHTML = linkify(r.openDataSummary || "");
 
     const list = $("dsList");
     const ds = Array.isArray(r.relevantDatasets) ? r.relevantDatasets : [];
@@ -533,13 +533,13 @@
     $("openPortal").href = portalUrl;
 
     // guidance
-    $("guidance").innerHTML = (r.submissionGuidance ? esc(r.submissionGuidance) : "") +
+    $("guidance").innerHTML = (r.submissionGuidance ? linkify(r.submissionGuidance) : "") +
       `<br><br><b>How to file:</b> Click <b>Open NYC OpenRecords</b>, choose <b>${esc(r.agencyName)}</b>, and paste the letter into the request field. ` +
       `Prefer email? Use the official <a href="https://a860-openrecords.nyc.gov/foil-officers-directory" target="_blank" rel="noopener">FOIL Officers Directory</a> to find that agency's current records-access officer.`;
 
     // caveat
     const cav = $("caveat");
-    if (r.caveats) { cav.style.display = "block"; cav.innerHTML = "<b>Heads up</b><br>" + esc(r.caveats); }
+    if (r.caveats) { cav.style.display = "block"; cav.innerHTML = "<b>Heads up</b><br>" + linkify(r.caveats); }
     else { cav.style.display = "none"; }
 
     // mailto (lets the user fire it from their own mail client to an officer they look up)
@@ -556,6 +556,11 @@
   }
 
   function esc(s) { const d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; }
+  // escape HTML, then turn bare URLs into clickable links (trailing punctuation left outside the link)
+  function linkify(s) {
+    return esc(s).replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]]/g, m =>
+      `<a href="${m}" target="_blank" rel="noopener">${m}</a>`);
+  }
 
   $("copyLetter").addEventListener("click", async () => {
     try {
