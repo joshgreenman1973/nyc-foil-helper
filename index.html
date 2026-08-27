@@ -205,6 +205,58 @@
   .tracker-link .tl-text b { color: #fff; }
   .tracker-link .tl-arr { margin-left: auto; color: #c8a43a; font-size: 18px; }
 
+  /* ---- Agency track record (OpenRecords log) ---- */
+  .track { margin: 22px 0 0; border: 1px solid var(--rule); background: var(--paper); }
+  .track-head {
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+    padding: 11px 16px; border-bottom: 1px solid var(--rule); background: var(--paper-2);
+  }
+  .track-head b { font-size: 11.5px; text-transform: uppercase; letter-spacing: .1em; }
+  .track-head span { font-size: 12.5px; color: var(--ink-soft); margin-left: auto; }
+  .track-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .track-grid .cell { padding: 16px; border-right: 1px solid var(--rule); }
+  .track-grid .cell:last-child { border-right: none; }
+  .track-grid .fig { font-family: var(--serif); font-size: 27px; font-weight: 600; line-height: 1.05; display: block; }
+  .track-grid .fig.bad { color: var(--stamp); }
+  .track-grid .fig.good { color: var(--ok); }
+  .track-grid .lab { font-size: 12px; color: var(--ink-soft); margin-top: 5px; display: block; line-height: 1.35; }
+  .track-note { padding: 13px 16px; border-top: 1px solid var(--rule); font-size: 13.5px; color: var(--ink-soft); }
+  .track-note b { color: var(--ink); }
+  .track-none { padding: 16px; font-size: 13.5px; color: var(--ink-soft); }
+
+  /* ---- Citywide backlog band ---- */
+  .backlog { margin: 34px 0 0; border: 1.5px solid var(--ink); background: #fffdf7; }
+  .backlog-head { padding: 18px 24px 0; }
+  .backlog-head .kick { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--stamp); }
+  .backlog-head h2 { font-family: var(--serif); font-weight: 600; font-size: 22px; margin: 8px 0 0; }
+  .backlog-head p { font-size: 14.5px; color: var(--ink-soft); margin: 8px 0 0; max-width: 74ch; }
+  .backlog-figs { display: grid; grid-template-columns: repeat(4, 1fr); margin: 18px 0 0; border-top: 1px solid var(--rule); }
+  .backlog-figs .cell { padding: 16px 24px; border-right: 1px solid var(--rule); }
+  .backlog-figs .cell:last-child { border-right: none; }
+  .backlog-figs .fig { font-family: var(--serif); font-size: 30px; font-weight: 600; line-height: 1; display: block; }
+  .backlog-figs .lab { font-size: 12px; color: var(--ink-soft); margin-top: 6px; display: block; line-height: 1.35; }
+  .bl-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .bl-table th {
+    text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .09em;
+    color: var(--ink-soft); font-weight: 600; padding: 9px 10px; border-bottom: 1px solid var(--ink);
+    background: var(--paper-2); white-space: nowrap;
+  }
+  .bl-table th.n, .bl-table td.n { text-align: right; font-family: var(--mono); font-size: 12.5px; }
+  .bl-table td { padding: 8px 10px; border-bottom: 1px solid var(--rule); }
+  .bl-table tr:last-child td { border-bottom: none; }
+  .bl-table td.name { font-weight: 600; }
+  .bl-table .warn { color: var(--stamp); }
+  .bl-wrap { overflow-x: auto; border-top: 1px solid var(--rule); }
+  .bl-foot { padding: 13px 24px; border-top: 1px solid var(--rule); background: var(--paper-2); font-size: 12.5px; color: var(--ink-soft); display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .bl-foot .btn-link { background: none; border: 1px solid var(--rule); font: inherit; color: var(--navy); padding: 5px 11px; cursor: pointer; }
+  .bl-foot .btn-link:hover { border-color: var(--navy); background: #fff; }
+  .bl-foot .src { margin-left: auto; }
+  @media (max-width: 700px) {
+    .track-grid, .backlog-figs { grid-template-columns: repeat(2, 1fr); }
+    .track-grid .cell:nth-child(2), .backlog-figs .cell:nth-child(2) { border-right: none; }
+    .track-grid .cell:nth-child(-n+2), .backlog-figs .cell:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
+  }
+
   .letter-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 26px; background: var(--navy); color: #fff; }
   .letter-head h3 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 18px; }
   .letter-head .subj { font-family: var(--mono); font-size: 12px; opacity: .85; }
@@ -317,6 +369,21 @@
     </div>
   </section>
 
+  <!-- CITYWIDE BACKLOG (from the OpenRecords request log) -->
+  <section class="backlog" id="backlog" style="display:none">
+    <div class="backlog-head">
+      <span class="kick">The queue you are joining</span>
+      <h2 id="blHead">New York City is sitting on unanswered records requests</h2>
+      <p id="blLede"></p>
+    </div>
+    <div class="backlog-figs" id="blFigs"></div>
+    <div class="bl-wrap"><table class="bl-table" id="blTable"></table></div>
+    <div class="bl-foot">
+      <button class="btn-link" id="blToggle" type="button">Show every agency</button>
+      <span class="src">Source: <a href="https://data.cityofnewyork.us/d/kegn-anvq" target="_blank" rel="noopener">OpenRecords FOIL request log</a> &middot; <a href="METHODOLOGY.md" target="_blank" rel="noopener">how these are counted</a></span>
+    </div>
+  </section>
+
   <!-- RESULTS -->
   <section id="results">
     <!-- STEP 2: already public? -->
@@ -357,6 +424,7 @@
         </div>
         <p class="reason" id="reason"></p>
         <div class="alts" id="alts" style="display:none"></div>
+        <div class="track" id="track" style="display:none"></div>
       </div>
     </div>
 
@@ -402,6 +470,8 @@
 
   const PORTAL_FALLBACK = "https://a860-openrecords.nyc.gov/request/new";
   let AGENCIES = [];
+  let PERF = null;        // data/foil-performance.json — the OpenRecords request log, summarized
+  let PERF_ALL = false;   // backlog table: top rows or every agency
 
   const EXAMPLES = [
     "Restaurant inspection reports and related complaints for my block over the past two years",
@@ -427,7 +497,116 @@
       .then(r => r.json())
       .then(d => { AGENCIES = d.agencies || []; })
       .catch(() => { /* directory is optional; worker still works */ });
+    fetch("data/foil-performance.json")
+      .then(r => r.json())
+      .then(d => { PERF = d; renderBacklog(); })
+      .catch(() => { /* track record is optional; the drafting tool still works */ });
     $("go").addEventListener("click", submit);
+    $("blToggle").addEventListener("click", () => { PERF_ALL = !PERF_ALL; renderBacklog(); });
+  }
+
+  // ===== AGENCY TRACK RECORD ==================================================
+  const nf = (n) => (n == null ? "—" : Number(n).toLocaleString("en-US"));
+  const longDate = (iso) => {
+    if (!iso) return "";
+    const [y, m, d] = iso.split("-").map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  };
+  const dayWord = (n) => (n === 1 ? "day" : "days");
+
+  function renderBacklog() {
+    if (!PERF) return;
+    const c = PERF.citywide, s = PERF.source;
+    $("blHead").textContent =
+      `${nf(c.past_due)} records requests are past their due date and still unanswered`;
+    $("blLede").innerHTML =
+      `Every request filed through the city's OpenRecords portal is logged: who was asked, when, ` +
+      `what date the agency promised, and whether it ever answered. Across ${nf(s.agencies)} agencies and ` +
+      `${nf(s.rows)} requests since ${new Date(s.first_request).getFullYear()}, ` +
+      `${nf(c.past_due_since_2024)} of the overdue ones were filed in 2024 or later &mdash; and some go back a decade. ` +
+      `Before you file, it is worth knowing what the agency you are about to ask actually does with requests like yours.`;
+    $("blFigs").innerHTML = [
+      [nf(c.past_due), "requests past due right now", "bad"],
+      [nf(c.median_days) + " " + dayWord(c.median_days), "median wait on requests closed in the last year"],
+      [nf(c.p90_days) + " " + dayWord(c.p90_days), "wait for the slowest tenth of them"],
+      [c.on_time_pct + "%", "closed by the date the agency itself set"],
+    ].map(([fig, lab, cls]) =>
+      `<div class="cell"><span class="fig ${cls === "bad" ? "bad" : ""}">${fig}</span><span class="lab">${lab}</span></div>`
+    ).join("");
+
+    const rows = PERF.agencies
+      .filter(a => PERF_ALL || a.past_due > 0)
+      .sort((a, b) => b.past_due - a.past_due || b.total - a.total)
+      .slice(0, PERF_ALL ? 999 : 10);
+    $("blTable").innerHTML =
+      `<thead><tr><th>Agency</th><th class="n">Requests filed</th><th class="n">Past due now</th>` +
+      `<th class="n">Median wait</th><th class="n">Met own deadline</th><th class="n">Oldest still open</th></tr></thead><tbody>` +
+      rows.map(a => `<tr>
+        <td class="name">${esc(a.agency)}</td>
+        <td class="n">${nf(a.total)}</td>
+        <td class="n ${a.past_due > 500 ? "warn" : ""}">${nf(a.past_due)}</td>
+        <td class="n">${a.median_days == null ? "—" : nf(a.median_days) + "d"}</td>
+        <td class="n">${a.on_time_pct == null ? "—" : a.on_time_pct + "%"}</td>
+        <td class="n">${a.oldest_past_due ? a.oldest_past_due.slice(0, 7) : "—"}</td>
+      </tr>`).join("") + "</tbody>";
+    $("blToggle").textContent = PERF_ALL ? "Show the worst backlogs only" : "Show every agency";
+    $("backlog").style.display = "block";
+  }
+
+  function renderTrack(agencyId, agencyName) {
+    const box = $("track");
+    if (!PERF) { box.style.display = "none"; return; }
+    const a = (agencyId && PERF.byId[agencyId]) ||
+              PERF.agencies.find(x => x.agency.toLowerCase() === String(agencyName || "").toLowerCase());
+    box.style.display = "block";
+    if (!a) {
+      box.innerHTML = `<div class="track-head"><b>Track record</b></div><div class="track-none">` +
+        `${esc(agencyName || "This agency")} does not take FOIL requests through the city's OpenRecords portal, ` +
+        `so there is no public log of how fast it answers. File directly with its records-access officer and keep ` +
+        `your own dated copy &mdash; the five-business-day acknowledgment clock still applies.</div>`;
+      return;
+    }
+    const late = a.past_due > 0;
+    const cells = [
+      [a.median_days == null ? "—" : nf(a.median_days) + " " + dayWord(a.median_days),
+       "median wait on the " + nf(a.closed_12mo) + " requests it closed in the last year",
+       a.median_days != null && a.median_days <= 14 ? "good" : ""],
+      [nf(a.past_due), "of its requests are past due right now", late ? "bad" : "good"],
+      [a.on_time_pct == null ? "—" : a.on_time_pct + "%", "of what it closed met the date it set itself",
+       a.on_time_pct != null && a.on_time_pct >= 90 ? "good" : a.on_time_pct != null && a.on_time_pct < 60 ? "bad" : ""],
+      [a.median_due_offset == null ? "—" : nf(a.median_due_offset) + " " + dayWord(a.median_due_offset),
+       "is how far out it typically sets that first deadline"],
+    ];
+    // The shape of the failure differs by agency: some leave requests open for years,
+    // some close them but always late, some set a deadline so far out that "on time"
+    // means nothing. Say which one this is instead of one generic line.
+    const bits = [];
+    if (a.past_due > 0 && a.oldest_past_due) {
+      bits.push(`${a.past_due >= 100 ? "is sitting on" : "has"} ${nf(a.past_due)} requests past their promised date, ` +
+        `the oldest filed ${longDate(a.oldest_past_due)}`);
+    }
+    if (a.on_time_pct != null && a.on_time_pct < 60) {
+      bits.push(`misses the deadline it set itself on ${Math.round(100 - a.on_time_pct)}% of what it closes`);
+    }
+    if (a.median_due_offset != null && a.median_due_offset >= 120) {
+      bits.push(`typically sets that first date ${nf(a.median_due_offset)} days out, which makes "on time" a low bar`);
+    }
+    if (a.median_days != null && a.median_days >= 90 && !bits.length) {
+      bits.push(`takes ${nf(a.median_days)} days or longer on half of what it closes`);
+    }
+    const shape = bits.length
+      ? `${esc(a.agency)} ` + bits.join("; ") + "."
+      : `${esc(a.agency)} is one of the faster agencies in the log, with nothing currently past due.`;
+    const note = `<b>What that means for you.</b> ${shape} FOIL still requires an acknowledgment within five ` +
+      `business days and a date certain for the records. When that date passes with no records and no new date, ` +
+      `the request is constructively denied and you can appeal immediately rather than keep waiting.`;
+    box.innerHTML =
+      `<div class="track-head"><b>What this agency actually does</b>` +
+      `<span>${nf(a.total)} requests logged &middot; ${nf(a.filed_12mo)} filed in the last year</span></div>` +
+      `<div class="track-grid">` +
+      cells.map(([fig, lab, cls]) =>
+        `<div class="cell"><span class="fig ${cls || ""}">${fig}</span><span class="lab">${lab}</span></div>`).join("") +
+      `</div><div class="track-note">${note}</div>`;
   }
 
   function setError(msg) { $("err").textContent = msg || ""; }
@@ -523,6 +702,9 @@
         "</ul>";
     } else { altWrap.style.display = "none"; }
 
+    // what this agency does with requests like yours, from the OpenRecords log
+    renderTrack(r.agencyId, r.agencyName);
+
     // letter
     $("subjLine").textContent = r.emailSubject || "";
     $("letter").value = r.foilLetter || "";
@@ -533,9 +715,18 @@
     $("openPortal").href = portalUrl;
 
     // guidance
+    const perfAgency = PERF && ((r.agencyId && PERF.byId[r.agencyId]) ||
+      PERF.agencies.find(x => x.agency.toLowerCase() === String(r.agencyName || "").toLowerCase()));
+    const followUp = (perfAgency && perfAgency.median_days != null)
+      ? `<br><br><b>When to follow up:</b> half the requests ${esc(perfAgency.agency)} closed in the last year were answered ` +
+        `within ${nf(perfAgency.median_days)} ${dayWord(perfAgency.median_days)}, and a tenth took more than ` +
+        `${nf(perfAgency.p90_days)} ${dayWord(perfAgency.p90_days)}. Diary the date the agency gives you. When it passes ` +
+        `with no records and no new date, treat it as a denial and file an appeal &mdash; that is what moves a stalled request.`
+      : "";
     $("guidance").innerHTML = (r.submissionGuidance ? linkify(r.submissionGuidance) : "") +
       `<br><br><b>How to file:</b> Click <b>Open NYC OpenRecords</b>, choose <b>${esc(r.agencyName)}</b>, and paste the letter into the request field. ` +
-      `Prefer email? Use the official <a href="https://a860-openrecords.nyc.gov/foil-officers-directory" target="_blank" rel="noopener">FOIL Officers Directory</a> to find that agency's current records-access officer.`;
+      `Prefer email? Use the official <a href="https://a860-openrecords.nyc.gov/foil-officers-directory" target="_blank" rel="noopener">FOIL Officers Directory</a> to find that agency's current records-access officer.` +
+      followUp;
 
     // caveat
     const cav = $("caveat");

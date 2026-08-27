@@ -23,6 +23,41 @@ For each plain-language request it returns:
 | [NYC OpenRecords portal](https://a860-openrecords.nyc.gov/) | Submission channel | The City's central FOIL intake; nearly every NYC agency receives requests here. This is the verified link the tool routes to. |
 | [NYC FOIL Officers Directory](https://a860-openrecords.nyc.gov/foil-officers-directory) | Named-officer lookup | Official, City-maintained list of current records-access officers. The tool links users here rather than hardcoding officer emails, which change frequently. |
 | Claude (Anthropic API, model `claude-sonnet-4-6`) | Routing + letter drafting | Generates the agency choice and letter text from the user's words and the directory. |
+| [OpenRecords FOIL request log](https://data.cityofnewyork.us/d/kegn-anvq) (`kegn-anvq`) | Agency track record | Every request filed through OpenRecords since 2006, with the date filed, the date the agency promised, the date it closed, and the current status. Rebuilt by `build_performance.py` into `data/foil-performance.json`. |
+
+## The agency track record
+
+The page shows two things drawn from the city's own request log: a citywide band ("the queue
+you are joining") and, once a request is routed, a scorecard for that specific agency.
+
+**How each number is defined.**
+
+- **Past due now** — requests that are still open (status `Overdue`, `In Progress`, `Due Soon`
+  or `Open`, with no close date) whose due date is earlier than today. This is counted from the
+  dates rather than read off the `Overdue` status label, because requests marked `In Progress`
+  can also be sitting past their date. The count is therefore slightly higher than the number
+  of rows the city labels `Overdue` (74,466 vs 73,007 on 2026-08-27).
+- **Median wait / slowest tenth** — days from filing to close, measured only on requests the
+  agency actually **closed in the last 365 days**. Requests still open are deliberately excluded
+  from this figure and counted in the backlog instead; averaging an unfinished request as if it
+  were finished would flatter a slow agency, and assigning it an arbitrary end date would invent
+  data. The effect is that an agency with a large stalled backlog can still show a fast median,
+  which is why both numbers are shown side by side.
+- **Met own deadline** — share of those closed requests that closed on or before the due date
+  **the agency itself set**. FOIL does not set a fixed deadline for producing records: it requires
+  acknowledgment within five business days and then a "date certain," which an agency may extend.
+  So this measures a promise the agency wrote, not a statutory clock, and an agency that promises
+  a year out can score highly while being slow. That is why the scorecard also shows how far out
+  the agency typically sets that first date.
+- **Oldest still open** — the filing date of the oldest request that is past due and unanswered.
+
+**Limits.** The log covers requests filed through OpenRecords only. Six agencies in the routing
+directory do not use it — NYCHA, the Comptroller, the Board of Elections, EDC, the School
+Construction Authority and DOHMH — and for those the page says there is no public track record
+rather than showing an empty scorecard. Status and close dates are the agency's own entries: a
+request marked closed may have been closed with a denial, a partial release or a referral, and
+the log does not say which. The build refuses to publish a pull of under 500,000 rows so a
+truncated or throttled fetch fails loudly instead of quietly shrinking the backlog.
 
 ### Why no hardcoded officer emails
 

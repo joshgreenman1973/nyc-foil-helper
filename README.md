@@ -21,6 +21,27 @@ drafts an airtight request letter, and gives you a ready-to-file draft.
    It returns structured JSON via a tool call.
 4. The page shows the chosen agency + confidence, an editable letter, and one-click
    **Copy / Open OpenRecords / Draft as email** actions.
+5. Alongside the routed agency, the page shows that agency's actual track record — how long it
+   takes, how many requests it has sitting past due, and whether it meets the deadlines it sets
+   itself — from the city's own OpenRecords request log.
+
+## The track record
+
+`data/foil-performance.json` is built from [`kegn-anvq`](https://data.cityofnewyork.us/d/kegn-anvq),
+the OpenRecords log of every FOIL request filed through the city portal since 2006 (636,690 rows
+as of 2026-08-27). Rebuild it with:
+
+```bash
+python3 build_performance.py
+```
+
+It pages the full log, computes citywide and per-agency figures, and refuses to write a file
+from a pull of under 500,000 rows — a throttled or truncated fetch fails instead of silently
+publishing a smaller backlog. As of the last build: **74,466 requests are past their due date and
+still unanswered**, 45,261 of them at the NYPD and 22,528 at the FDNY; the oldest still-open
+request at the Department of Education was filed in March 2016. Definitions and caveats are in
+[METHODOLOGY.md](METHODOLOGY.md) — in particular, "met own deadline" measures a date the agency
+set for itself, not a statutory one.
 
 ## Setup
 

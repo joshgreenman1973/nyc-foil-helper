@@ -1,0 +1,43 @@
+name: Refresh FOIL track record
+
+# The OpenRecords log (kegn-anvq) is republished weekly. Rebuild the agency
+# scorecards from it and push only when the numbers actually move, so the page
+# never shows a backlog that is months out of date.
+
+on:
+  schedule:
+    - cron: "20 12 * * 2"   # Tuesdays, 12:20 UTC (~8:20am ET)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-performance
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Rebuild data/foil-performance.json
+        run: python3 build_performance.py
+
+      - name: Commit and push if the numbers changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- data/foil-performance.json; then
+            echo "No change in the request log."
+            exit 0
+          fi
+          PAST_DUE=$(python3 -c "import json;print(f\"{json.load(open('data/foil-performance.json'))['citywide']['past_due']:,}\")")
+          git add data/foil-performance.json
+          git commit -m "Refresh FOIL track record — ${PAST_DUE} requests past due"
+          git push
