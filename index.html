@@ -126,20 +126,6 @@
   .track-note b{color:var(--ink)}
   .track-none{padding:14px;font-size:13.5px;color:#333834}
 
-  /* citywide backlog */
-  .bl-wrap{overflow-x:auto}
-  .bl-table{width:100%;border-collapse:collapse;font-size:.9rem}
-  .bl-table th{font-size:var(--t-micro);letter-spacing:.14em;text-transform:uppercase;font-weight:700;
-    color:var(--ink2);text-align:left;padding:8px 26px 8px 0;border-bottom:1px solid var(--ink);white-space:nowrap}
-  .bl-table th:first-child,.bl-table td:first-child{padding-left:26px}
-  .bl-table td{padding:7px 26px 7px 0;border-bottom:1px solid var(--hair2)}
-  .bl-table th.n,.bl-table td.n{text-align:right;font-variant-numeric:tabular-nums}
-  .bl-table td.name{font-weight:600}
-  .bl-table .warn{color:var(--ink3)}
-  .bl-foot{display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:12px 26px;
-    border-top:1px solid var(--hair);font-size:11.5px;color:var(--ink2)}
-  .bl-foot .src{margin-left:auto}
-
   /* the letter: a plain typed block. No ruled paper, no shadow. */
   .letter-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 26px;
     background:var(--ink);color:var(--paper);
@@ -163,8 +149,7 @@
   #config-banner code{font-family:'Cousine',monospace;background:rgba(0,0,0,.18);padding:1px 5px}
   @media(max-width:640px){
     .head{padding:22px 20px 18px}
-    .pad,.sechead,.letter-head,.toolbar,.guidance,.caveat,.bl-foot{padding-left:20px;padding-right:20px}
-    .bl-table th:first-child,.bl-table td:first-child{padding-left:20px}
+    .pad,.sechead,.letter-head,.toolbar,.guidance,.caveat{padding-left:20px;padding-right:20px}
   }
 </style>
 </head>
@@ -246,18 +231,6 @@
     </div>
   </section>
 
-  <!-- CITYWIDE BACKLOG (from the OpenRecords request log) -->
-  <section id="backlog" style="display:none">
-    <div class="capline" id="blHead">The queue you are joining</div>
-    <div class="counts" id="blFigs"></div>
-    <div class="pad" style="padding-bottom:8px"><p class="sub" id="blLede" style="margin:0"></p></div>
-    <div class="bl-wrap"><table class="bl-table" id="blTable"></table></div>
-    <div class="bl-foot">
-      <button class="chip" id="blToggle" type="button">Show every agency</button>
-      <span class="src">Source: <a href="https://data.cityofnewyork.us/d/kegn-anvq" target="_blank" rel="noopener">OpenRecords FOIL request log</a> &middot; <a href="METHODOLOGY.md" target="_blank" rel="noopener">how these are counted</a></span>
-    </div>
-  </section>
-
   <!-- RESULTS -->
   <section id="results">
     <!-- STEP 2: already public? -->
@@ -332,8 +305,28 @@
 
   const PORTAL_FALLBACK = "https://a860-openrecords.nyc.gov/request/new";
   let AGENCIES = [];
-  let PERF = null;        // data/foil-performance.json — the OpenRecords request log, summarized
-  let PERF_ALL = false;   // backlog table: top rows or every agency
+  // The whole-log analysis lives in the FOIL Tracker, which is the project about what
+  // happens to requests. This page borrows one agency's row from it at the moment of
+  // filing. Same origin on Pages, and the file is served with CORS for local dev.
+  const TRACKER = "https://joshgreenman1973.github.io/experiments/nyc-foil-tracker/";
+  const PERF_URL = TRACKER + "data/performance.json";
+  let PERF = null;
+  // The tracker keys agencies by the name OpenRecords uses; agencies.json uses ids.
+  // Agencies missing here do not take FOIL through OpenRecords at all (NYCHA, the
+  // Comptroller, the Board of Elections, EDC, SCA, DOHMH), so there is no record to show.
+  const OPENRECORDS_NAME = {
+    nypd: "New York City Police Department", fdny: "New York City Fire Department",
+    doc: "Department of Correction", doe: "Department of Education",
+    hpd: "Department of Housing Preservation and Development", dob: "Department of Buildings",
+    dot: "Department of Transportation", dsny: "Department of Sanitation",
+    hra: "Human Resources Administration", dhs: "Department of Homeless Services",
+    acs: "Administration for Children's Services", dcwp: "Department of Consumer and Worker Protection",
+    dcp: "Department of City Planning", dep: "Department of Environmental Protection",
+    dpr: "Department of Parks and Recreation", tlc: "Taxi and Limousine Commission",
+    doi: "Department of Investigation", omb: "Office of Management and Budget",
+    mayor: "Mayor's Office", dcas: "Department of Citywide Administrative Services",
+    mocj: "Mayor's Office of Criminal Justice", bic: "Business Integrity Commission",
+  };
 
   const EXAMPLES = [
     "Restaurant inspection reports and related complaints for my block over the past two years",
@@ -359,12 +352,11 @@
       .then(r => r.json())
       .then(d => { AGENCIES = d.agencies || []; })
       .catch(() => { /* directory is optional; worker still works */ });
-    fetch("data/foil-performance.json")
+    fetch(PERF_URL)
       .then(r => r.json())
-      .then(d => { PERF = d; renderBacklog(); })
+      .then(d => { PERF = d; })
       .catch(() => { /* track record is optional; the drafting tool still works */ });
     $("go").addEventListener("click", submit);
-    $("blToggle").addEventListener("click", () => { PERF_ALL = !PERF_ALL; renderBacklog(); });
   }
 
   // ===== AGENCY TRACK RECORD ==================================================
@@ -376,47 +368,11 @@
   };
   const dayWord = (n) => (n === 1 ? "day" : "days");
 
-  function renderBacklog() {
-    if (!PERF) return;
-    const c = PERF.citywide, s = PERF.source;
-    $("blHead").innerHTML =
-      `The queue you are joining &middot; <b>${nf(s.rows)}</b> requests to <b>${nf(s.agencies)}</b> agencies since ` +
-      `${new Date(s.first_request).getFullYear()}, as logged by the city on ${PERF.generated}`;
-    $("blLede").innerHTML =
-      `Every request filed through the city's OpenRecords portal is logged: who was asked, when, what date the ` +
-      `agency promised, and whether it ever answered. <b>${nf(c.past_due)}</b> of them are past that date and still ` +
-      `unanswered; ${nf(c.past_due_since_2024)} were filed in 2024 or later, and some go back a decade. Before you ` +
-      `file, it is worth knowing what the agency you are about to ask does with requests like yours.`;
-    $("blFigs").innerHTML = [
-      [nf(c.past_due), "past due right now"],
-      [nf(c.median_days) + " " + dayWord(c.median_days), "median wait, closed last year"],
-      [nf(c.p90_days) + " " + dayWord(c.p90_days), "wait for the slowest tenth"],
-      [c.on_time_pct + "%", "met the agency's own date"],
-    ].map(([fig, lab]) => `<div><b>${fig}</b><span>${lab}</span></div>`).join("");
-
-    const rows = PERF.agencies
-      .filter(a => PERF_ALL || a.past_due > 0)
-      .sort((a, b) => b.past_due - a.past_due || b.total - a.total)
-      .slice(0, PERF_ALL ? 999 : 10);
-    $("blTable").innerHTML =
-      `<thead><tr><th>Agency</th><th class="n">Requests filed</th><th class="n">Past due now</th>` +
-      `<th class="n">Median wait</th><th class="n">Met own deadline</th><th class="n">Oldest still open</th></tr></thead><tbody>` +
-      rows.map(a => `<tr>
-        <td class="name">${esc(a.agency)}</td>
-        <td class="n">${nf(a.total)}</td>
-        <td class="n ${a.past_due > 500 ? "warn" : ""}">${nf(a.past_due)}</td>
-        <td class="n">${a.median_days == null ? "—" : nf(a.median_days) + "d"}</td>
-        <td class="n">${a.on_time_pct == null ? "—" : a.on_time_pct + "%"}</td>
-        <td class="n">${a.oldest_past_due ? a.oldest_past_due.slice(0, 7) : "—"}</td>
-      </tr>`).join("") + "</tbody>";
-    $("blToggle").textContent = PERF_ALL ? "Show the worst backlogs only" : "Show every agency";
-    $("backlog").style.display = "block";
-  }
-
   function renderTrack(agencyId, agencyName) {
     const box = $("track");
     if (!PERF) { box.style.display = "none"; return; }
-    const a = (agencyId && PERF.byId[agencyId]) ||
+    const name = OPENRECORDS_NAME[agencyId];
+    const a = (name && PERF.byAgency[name]) ||
               PERF.agencies.find(x => x.agency.toLowerCase() === String(agencyName || "").toLowerCase());
     box.style.display = "block";
     if (!a) {
@@ -459,10 +415,12 @@
       : `${esc(a.agency)} is one of the faster agencies in the log, with nothing currently past due.`;
     const note = `<b>What that means for you.</b> ${shape} FOIL still requires an acknowledgment within five ` +
       `business days and a date certain for the records. When that date passes with no records and no new date, ` +
-      `the request is constructively denied and you can appeal immediately rather than keep waiting.`;
+      `the request is constructively denied and you can appeal immediately rather than keep waiting. ` +
+      `The whole backlog, agency by agency, is in the <a href="${TRACKER}" target="_blank" rel="noopener">FOIL Tracker</a>.`;
     box.innerHTML =
       `<div class="track-head"><b>What this agency actually does</b>` +
-      `<span>${nf(a.total)} requests logged &middot; ${nf(a.filed_12mo)} filed in the last year</span></div>` +
+      `<span>${nf(a.total)} requests logged &middot; ${nf(a.filed_12mo)} filed in the last year &middot; ` +
+      `<a href="${TRACKER}" target="_blank" rel="noopener">every agency &rarr;</a></span></div>` +
       `<div class="track-grid">` +
       cells.map(([fig, lab, cls]) =>
         `<div class="cell"><span class="fig ${cls || ""}">${fig}</span><span class="lab">${lab}</span></div>`).join("") +
@@ -575,7 +533,8 @@
     $("openPortal").href = portalUrl;
 
     // guidance
-    const perfAgency = PERF && ((r.agencyId && PERF.byId[r.agencyId]) ||
+    const perfName = OPENRECORDS_NAME[r.agencyId];
+    const perfAgency = PERF && ((perfName && PERF.byAgency[perfName]) ||
       PERF.agencies.find(x => x.agency.toLowerCase() === String(r.agencyName || "").toLowerCase()));
     const followUp = (perfAgency && perfAgency.median_days != null)
       ? `<br><br><b>When to follow up:</b> half the requests ${esc(perfAgency.agency)} closed in the last year were answered ` +

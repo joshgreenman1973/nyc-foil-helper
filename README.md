@@ -30,21 +30,22 @@ drafts an airtight request letter, and gives you a ready-to-file draft.
 
 ## The track record
 
-`data/foil-performance.json` is built from [`kegn-anvq`](https://data.cityofnewyork.us/d/kegn-anvq),
-the OpenRecords log of every FOIL request filed through the city portal since 2006 (636,690 rows
-as of 2026-08-27). Rebuild it with:
+Alongside the routed agency, the page shows what that agency does with requests like yours:
+median wait, how many requests it has sitting past due, whether it meets the date it sets
+itself, and how far out it sets that date.
 
-```bash
-python3 build_performance.py
-```
+Those numbers are **not built here**. They come from the
+[NYC FOIL Tracker](https://joshgreenman1973.github.io/experiments/nyc-foil-tracker/), which is
+the project about what happens to requests once filed; it summarizes the whole OpenRecords log
+(`kegn-anvq`, 638,760 requests since 2006) into `data/performance.json` and rebuilds it weekly.
+This page fetches that file at runtime — same origin on GitHub Pages, and it is served with
+permissive CORS for local development — and reads a single agency's row from it. If the fetch
+fails the drafting tool still works; the track-record block simply does not appear.
 
-It pages the full log, computes citywide and per-agency figures, and refuses to write a file
-from a pull of under 500,000 rows — a throttled or truncated fetch fails instead of silently
-publishing a smaller backlog. As of the last build: **74,466 requests are past their due date and
-still unanswered**, 45,261 of them at the NYPD and 22,528 at the FDNY; the oldest still-open
-request at the Department of Education was filed in March 2016. Definitions and caveats are in
-[METHODOLOGY.md](METHODOLOGY.md) — in particular, "met own deadline" measures a date the agency
-set for itself, not a statutory one.
+The citywide backlog, the full agency table and the definitions live in the Tracker and its
+[methodology](https://joshgreenman1973.github.io/experiments/nyc-foil-tracker/methodology.html).
+The one caveat worth repeating here: "met own deadline" measures a date the agency set for
+itself and may have extended, not a statutory one.
 
 ## Setup
 
