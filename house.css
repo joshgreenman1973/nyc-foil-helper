@@ -1,0 +1,238 @@
+/* ============================================================
+   HOUSE SYSTEM — muted riso
+   Josh Greenman personal projects. Load this first, then a small
+   per-project block that may override --ink3 and nothing else.
+
+   Fonts (add to <head>):
+   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+   RULES, so this stays itself:
+   - No rounded corners. No box shadows. No gradients. No glass.
+   - No stat cards with huge numbers. Counts are stated flat and small.
+   - No display word plus italic accent word in a warm colour.
+   - No emoji as iconography. No pastel pill badges.
+   - Colour carries meaning only: category, series, state. Never decoration,
+     with the single exception of the header mark.
+   - Type sizes come from the scale below. Do not invent new ones.
+   ============================================================ */
+
+:root{
+  /* Pale neutral stock with the faintest green cast. Deliberately NOT warm
+     cream with a terracotta accent — that combination is Anthropic's own
+     brand palette and reading as "made by a chatbot" is the one thing this
+     system must not do. The ground stays quiet; the inks carry the colour. */
+  --paper:#eceee9;
+  --paper2:#e1e4de;
+  --ink:#1b1e1c;
+  --ink2:#5c625d;
+  --hair:#c7ccc5;
+  --hair2:#d8dcd6;
+
+  /* Five spot inks, used semantically and never decoratively. A project may
+     re-pick --ink3 only. Enough hues that a page reads multicoloured rather
+     than tinted, but all held to the same low chroma so it stays calm. */
+  --ink1:#2d4a86;   /* indigo   — primary category, active state */
+  --ink2c:#4a6b52;  /* moss     — secondary category, bars */
+  --ink3:#8a4a6b;   /* plum     — tertiary / accent, project-overridable */
+  --ink4:#b07326;   /* amber    — emphasis, warnings, highlighted values */
+  --ink5:#2b6f75;   /* teal     — fourth category */
+
+  --sans:'Karla',system-ui,-apple-system,sans-serif;
+  --display:'Archivo',system-ui,sans-serif;
+
+  /* type scale — five sizes, no more */
+  --t-micro:9.5px;   /* eyebrow, label, meta */
+  --t-small:10px;    /* strip, tab, footer */
+  --t-body:1.02rem;
+  --t-rec:1.04rem;   /* record title */
+  --t-h1:clamp(1.7rem,3.6vw,2.5rem);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--ink1)}
+button{font-family:inherit}
+
+/* ---------- shell ---------- */
+.sheet{max-width:1400px;margin:0 auto;background:var(--paper);position:relative}
+.strip{
+  background:var(--paper2);border-bottom:1px solid var(--hair);
+  padding:8px 26px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  font-size:var(--t-small);letter-spacing:.17em;text-transform:uppercase;
+  font-weight:700;color:var(--ink2);
+}
+.strip a{color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--hair)}
+.strip a:hover{color:var(--ink)}
+
+/* ---------- header, with a per-project mark ----------
+   Every project has its own mark in .hmark, a risograph-style screenprint
+   generated for the subject and knocked out to transparency: contour lines
+   for place names, a flock crossing a flight path for bird strikes, struck
+   crates for import refusals, umbrellas for lost property. It is the one
+   place decoration is allowed, and it must say something about the subject.
+   Never a plain circle used as generic ornament.                        */
+/* The mark is taken out of flow and the header reserves room for it with
+   padding. Do not put it in the grid: a row-spanning item stretches the rows
+   and the title floats away from the paragraph beneath it. */
+.head{
+  position:relative;overflow:hidden;
+  padding:26px calc(clamp(150px,22vw,290px) + 52px) 20px 26px;
+}
+.hmark{
+  position:absolute;right:26px;top:26px;
+  width:clamp(150px,22vw,290px);pointer-events:none;
+}
+.hmark svg,.hmark img{width:100%;height:auto;max-height:150px;object-fit:contain;overflow:visible;display:block}
+.hmark svg{mix-blend-mode:multiply}
+@media(max-width:900px){
+  .head{padding-right:26px}
+  .hmark{display:none}
+}
+h1{
+  font-family:var(--display);font-weight:700;margin:0;
+  font-size:var(--t-h1);line-height:1.02;letter-spacing:-.02em;position:relative;z-index:2;
+}
+.sub{position:relative;z-index:2;margin:9px 0 0;max-width:64ch;
+  font-size:var(--t-body);line-height:1.55;color:#333834}
+.src{position:relative;z-index:2;margin:13px 0 0;font-size:var(--t-small);
+  letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--ink2)}
+.src a{color:var(--ink2)}
+
+/* ---------- counts: flat, small, never a card ----------
+   Cells are equal width and equal height, so labels that wrap to two lines
+   do not knock the row out of alignment. Keep labels to three words.
+   Always precede the strip with .capline saying what period it covers —
+   a bare number with no period attached is not a fact.                   */
+.capline{
+  padding:9px 26px;border-top:1px solid var(--ink);background:var(--paper2);
+  font-size:var(--t-micro);letter-spacing:.14em;text-transform:uppercase;
+  font-weight:700;color:var(--ink2);
+}
+.capline b{color:var(--ink);font-weight:700}
+.capline + .counts{border-top:1px solid var(--hair)}
+.counts{display:flex;flex-wrap:wrap;border-top:1px solid var(--ink);border-bottom:1px solid var(--hair)}
+.counts div{
+  flex:1 1 168px;padding:13px 20px 14px;border-right:1px solid var(--hair);
+  display:flex;flex-direction:column;gap:6px;min-height:76px;
+}
+.counts div:last-child{border-right:0}
+.counts b{display:block;font-family:var(--display);font-weight:600;font-size:1.45rem;
+  line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.counts span{font-size:var(--t-micro);letter-spacing:.12em;text-transform:uppercase;
+  font-weight:700;color:var(--ink2);line-height:1.35;max-width:20ch;text-wrap:balance}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--hair);background:var(--paper)}
+.tabs button{
+  font-size:var(--t-small);letter-spacing:.15em;text-transform:uppercase;font-weight:700;
+  background:none;border:0;border-right:1px solid var(--hair);color:var(--ink2);
+  padding:11px 16px;cursor:pointer;
+}
+.tabs button:hover{color:var(--ink)}
+.tabs button.on{background:var(--ink1);color:var(--paper)}
+
+/* ---------- controls ---------- */
+.controls{display:flex;gap:9px;flex-wrap:wrap;align-items:center;
+  padding:13px 26px;border-bottom:1px solid var(--hair)}
+input[type=search],input[type=text]{
+  flex:1 1 260px;min-width:190px;font-family:var(--sans);font-size:14.5px;font-weight:500;
+  padding:10px 13px;border:1px solid var(--ink);background:#fff;color:var(--ink);border-radius:0;outline:none;
+}
+input[type=search]:focus,input[type=text]:focus{box-shadow:inset 0 0 0 2px var(--ink3)}
+select{
+  font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:10px 9px;border:1px solid var(--ink);background:#fff;color:var(--ink);border-radius:0;
+}
+.chip{
+  font-size:var(--t-small);letter-spacing:.11em;text-transform:uppercase;font-weight:700;
+  padding:7px 11px;border:1px solid var(--hair);background:transparent;color:var(--ink2);
+  cursor:pointer;border-radius:0;
+}
+.chip:hover{border-color:var(--ink);color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* ---------- panels and columns ---------- */
+.cols{display:grid;grid-template-columns:1.08fr 1fr}
+@media(max-width:900px){.cols{grid-template-columns:1fr}}
+.cols>.col{padding:0;min-width:0}
+.cols>.col:first-child{border-right:1px solid var(--hair)}
+.colhead{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:9px 26px;border-bottom:1px solid var(--hair);
+  font-size:var(--t-micro);letter-spacing:.16em;text-transform:uppercase;
+  font-weight:700;color:var(--ink2);
+}
+.pad{padding:14px 26px 24px}
+
+/* ---------- records ---------- */
+.rec{
+  display:block;width:100%;text-align:left;background:none;border:0;
+  border-bottom:1px solid var(--hair);padding:11px 26px;cursor:pointer;
+  font-family:inherit;color:inherit;
+}
+.rec:hover{background:var(--paper2)}
+.rec.sel{background:var(--paper2);box-shadow:inset 4px 0 0 var(--ink1)}
+.rec b{font-family:var(--display);font-weight:600;font-size:var(--t-rec);display:block;
+  letter-spacing:-.012em;line-height:1.25}
+.rec .meta{font-style:normal;font-size:var(--t-micro);letter-spacing:.1em;text-transform:uppercase;
+  font-weight:700;color:var(--ink2);display:block;margin-top:3px}
+.pill{display:inline-block;padding:1px 7px;margin-right:7px;color:var(--paper);background:var(--ink2c)}
+.pill.c{background:var(--ink1)}
+.pill.o{background:var(--ink3);color:var(--ink)}
+
+/* ---------- bars ---------- */
+.brow{display:flex;align-items:center;gap:11px;padding:6px 0}
+.brow span{width:96px;font-size:.92rem;font-weight:600;flex:none}
+.brow i{height:12px;display:block;background:var(--ink2c);mix-blend-mode:multiply;opacity:.85}
+.brow u{text-decoration:none;font-family:var(--display);font-weight:600;margin-left:auto;
+  font-variant-numeric:tabular-nums;font-size:.92rem}
+
+/* ---------- tables ---------- */
+table.h{width:100%;border-collapse:collapse;font-size:.9rem}
+table.h th{font-size:var(--t-micro);letter-spacing:.14em;text-transform:uppercase;font-weight:700;
+  color:var(--ink2);text-align:left;padding:6px 10px 6px 0;border-bottom:1px solid var(--ink)}
+table.h td{padding:6px 10px 6px 0;border-bottom:1px solid var(--hair2)}
+table.h td.n,table.h th.n{text-align:right;font-variant-numeric:tabular-nums}
+
+/* ---------- drawer for a single record ---------- */
+.drawer{position:fixed;inset:0;z-index:900;display:none}
+.drawer.open{display:block}
+.drawer .scrim{position:absolute;inset:0;background:rgba(34,31,26,.5)}
+.drawer .panel{position:absolute;top:0;right:0;height:100%;width:min(720px,100%);
+  background:var(--paper);border-left:1px solid var(--ink);overflow:auto}
+.drawer .dhead{position:sticky;top:0;background:var(--paper2);border-bottom:1px solid var(--ink);
+  padding:12px 22px;display:flex;justify-content:space-between;gap:14px;align-items:flex-start;z-index:2}
+.drawer .dhead .lbl{font-size:var(--t-micro);letter-spacing:.15em;text-transform:uppercase;
+  font-weight:700;color:var(--ink2)}
+.drawer .dhead h2{margin:3px 0 0;font-family:var(--display);font-size:1.4rem;line-height:1.16;
+  font-weight:700;letter-spacing:-.02em}
+.xbtn{font-size:19px;line-height:1;background:none;border:1px solid var(--ink);
+  width:32px;height:32px;cursor:pointer;color:var(--ink);flex:none}
+.dbody{padding:18px 22px 60px}
+dl.f{margin:0 0 18px;border-top:1px solid var(--hair)}
+dl.f>div{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:8px 0;
+  border-bottom:1px solid var(--hair2);font-size:.94rem}
+dl.f dt{font-size:var(--t-micro);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink2);font-weight:700;padding-top:3px}
+dl.f dd{margin:0}
+@media(max-width:560px){dl.f>div{grid-template-columns:1fr;gap:2px}}
+.narr h4{font-size:var(--t-micro);letter-spacing:.16em;text-transform:uppercase;color:var(--ink2);
+  font-weight:700;margin:20px 0 7px;padding-bottom:5px;border-bottom:1px solid var(--hair)}
+.narr p{margin:0 0 11px;font-size:1rem;line-height:1.62}
+.srcbtn{display:inline-block;font-size:var(--t-small);letter-spacing:.11em;text-transform:uppercase;
+  font-weight:700;border:1px solid var(--ink);padding:9px 13px;text-decoration:none;
+  color:var(--ink);margin-top:8px}
+.srcbtn:hover{background:var(--ink);color:var(--paper)}
+
+/* ---------- footer ---------- */
+.foot{padding:14px 26px 40px;border-top:1px solid var(--hair);font-size:.9rem;color:var(--ink2)}
+.foot a{color:var(--ink)}
+.caution{font-size:var(--t-small);letter-spacing:.05em;text-transform:uppercase;font-weight:700;
+  color:var(--ink2);border:1px dashed var(--hair);padding:9px 12px;margin:0 0 14px;
+  max-width:90ch;line-height:1.7}
+.empty{padding:36px 26px;color:var(--ink2);font-size:.95rem}

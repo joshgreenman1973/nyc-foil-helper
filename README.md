@@ -4,7 +4,10 @@ Turn a plain-language description of what you want from New York City government
 legally sound **Freedom of Information Law (FOIL)** request: the tool picks the right agency,
 drafts an airtight request letter, and gives you a ready-to-file draft.
 
-- **Front end:** one static `index.html` (deploys to GitHub Pages).
+- **Front end:** one static `index.html` (deploys to GitHub Pages), on the house system —
+  `house.css` here is a vendored copy of `~/Experiments/house-style/house.css`; re-copy it
+  rather than editing it in place, and keep project overrides in the small `<style>` block
+  in `index.html`.
 - **Brains:** a Cloudflare Worker that proxies to the Anthropic API so the API key is never
   exposed in the browser.
 - **Routing:** `agencies.json`, a curated directory of NYC agencies and the records they hold.
