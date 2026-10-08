@@ -11,8 +11,13 @@
  * a fraction of a cent per request. The DAILY_BUDGET_USD cap below is a coarse backstop.
  */
 
-const MODEL = "claude-sonnet-4-6";
-const MAX_TOKENS = 4000;
+// Claude Sonnet 5.5 rejects forced tool_choice, so the structured result comes back
+// through structured outputs (output_config.format) instead of a forced tool call.
+// Thinking is on by default and counts toward max_tokens: effort "low" keeps it short
+// and the cap leaves room for it plus the letter.
+const MODEL = "claude-sonnet-5-5";
+const MAX_TOKENS = 16000;
+const EFFORT = "low";
 
 // Lock this down to your GitHub Pages origin(s) before going public.
 const ALLOWED_ORIGINS = [
@@ -72,53 +77,54 @@ PART 3 — FORMAT AS EMAIL.
 - Provide a concise email subject line, e.g. "FOIL Request — [short description]".
 - Provide a short "submissionGuidance" string telling the requester how to actually file it: that the canonical channel for nearly every NYC agency is the NYC OpenRecords portal (paste the letter body into the request field), and that the chosen agency's submission URL is included. Mention they can look up the current named records-access officer in the official FOIL Officers Directory if they prefer email.
 
-Return ONLY a tool call to "foil_result". Do not write any prose outside the tool call.`;
+Return ONLY the JSON object described by the output schema. Do not write any prose outside it.`;
 
-const RESULT_TOOL = {
-  name: "foil_result",
-  description: "Structured FOIL routing and draft result.",
-  input_schema: {
-    type: "object",
-    properties: {
-      openDataVerdict: { type: "string", enum: ["likely_answerable", "partially", "not_answerable", "unsure"] },
-      openDataSummary: { type: "string", description: "1-3 sentences on what open data can answer now vs. what needs a FOIL." },
-      relevantDatasets: {
-        type: "array",
-        description: "Datasets chosen ONLY from the provided NYC Open Data results. Empty if none truly match.",
-        items: {
-          type: "object",
-          properties: {
-            title: { type: "string" },
-            url: { type: "string" },
-            why: { type: "string" },
-          },
-          required: ["title", "url", "why"],
+// JSON schema for the structured result. Structured outputs need
+// additionalProperties: false on every object.
+const RESULT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    openDataVerdict: { type: "string", enum: ["likely_answerable", "partially", "not_answerable", "unsure"] },
+    openDataSummary: { type: "string", description: "1-3 sentences on what open data can answer now vs. what needs a FOIL." },
+    relevantDatasets: {
+      type: "array",
+      description: "Datasets chosen ONLY from the provided NYC Open Data results. Empty if none truly match.",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          title: { type: "string" },
+          url: { type: "string" },
+          why: { type: "string" },
         },
+        required: ["title", "url", "why"],
       },
-      trackerQuery: { type: "string", description: "2-5 space-separated keywords to search prior FOIL requests." },
-      agencyId: { type: "string", description: "The exact 'id' of the chosen agency from the directory, or 'unknown'." },
-      agencyName: { type: "string", description: "Full name of the chosen agency." },
-      confidence: { type: "string", enum: ["high", "medium", "low"] },
-      reasoning: { type: "string", description: "1-3 sentences on why this agency holds the records." },
-      alternativeAgencies: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            agencyId: { type: "string" },
-            agencyName: { type: "string" },
-            reason: { type: "string" },
-          },
-          required: ["agencyName", "reason"],
-        },
-      },
-      emailSubject: { type: "string" },
-      foilLetter: { type: "string", description: "The complete FOIL letter body, ready to paste or send." },
-      submissionGuidance: { type: "string" },
-      caveats: { type: "string", description: "Any caveats: missing info the user should add, scope warnings, or exemptions likely to apply." },
     },
-    required: ["openDataVerdict", "openDataSummary", "relevantDatasets", "trackerQuery", "agencyId", "agencyName", "confidence", "reasoning", "emailSubject", "foilLetter", "submissionGuidance"],
+    trackerQuery: { type: "string", description: "2-5 space-separated keywords to search prior FOIL requests." },
+    agencyId: { type: "string", description: "The exact 'id' of the chosen agency from the directory, or 'unknown'." },
+    agencyName: { type: "string", description: "Full name of the chosen agency." },
+    confidence: { type: "string", enum: ["high", "medium", "low"] },
+    reasoning: { type: "string", description: "1-3 sentences on why this agency holds the records." },
+    alternativeAgencies: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          agencyId: { type: "string" },
+          agencyName: { type: "string" },
+          reason: { type: "string" },
+        },
+        required: ["agencyName", "reason"],
+      },
+    },
+    emailSubject: { type: "string" },
+    foilLetter: { type: "string", description: "The complete FOIL letter body, ready to paste or send." },
+    submissionGuidance: { type: "string" },
+    caveats: { type: "string", description: "Any caveats: missing info the user should add, scope warnings, or exemptions likely to apply." },
   },
+  required: ["openDataVerdict", "openDataSummary", "relevantDatasets", "trackerQuery", "agencyId", "agencyName", "confidence", "reasoning", "emailSubject", "foilLetter", "submissionGuidance"],
 };
 
 export default {
@@ -177,13 +183,19 @@ export default {
           "content-type": "application/json",
           "x-api-key": env.ANTHROPIC_API_KEY,
           "anthropic-version": "2023-06-01",
+          // Server-side fallback: if a safety classifier declines, the API retries on
+          // the model Anthropic recommends for that category.
+          "anthropic-beta": "server-side-fallback-2026-07-01",
         },
         body: JSON.stringify({
           model: MODEL,
           max_tokens: MAX_TOKENS,
+          fallbacks: "default",
           system: SYSTEM_PROMPT,
-          tools: [RESULT_TOOL],
-          tool_choice: { type: "tool", name: "foil_result" },
+          output_config: {
+            effort: EFFORT,
+            format: { type: "json_schema", schema: RESULT_SCHEMA },
+          },
           messages: [{ role: "user", content: userContent }],
         }),
       });
@@ -197,12 +209,22 @@ export default {
     }
 
     const data = await apiResp.json();
-    const toolUse = (data.content || []).find((b) => b.type === "tool_use" && b.name === "foil_result");
-    if (!toolUse) {
+    if (data.stop_reason === "refusal") {
+      return json({ error: "The model declined this request.", stop_details: data.stop_details || null }, 502, cors);
+    }
+    if (data.stop_reason === "max_tokens") {
+      return json({ error: "The draft ran past the length limit. Try a narrower request." }, 502, cors);
+    }
+    // A reply can open with (empty) thinking blocks; the result is the text block.
+    const text = (data.content || []).filter((b) => b.type === "text").map((b) => b.text).join("");
+    let result;
+    try {
+      result = JSON.parse(text);
+    } catch {
       return json({ error: "Model did not return a structured result.", raw: data }, 502, cors);
     }
 
-    return json({ result: toolUse.input }, 200, cors);
+    return json({ result }, 200, cors);
   },
 };
 
